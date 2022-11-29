@@ -80,22 +80,24 @@ class _MyHomePageState extends State<MyHomePage> {
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      selectedIndexes.add(index);
-                      if (bombIndexes.contains(index)) {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return DemineurAlertDialog(
-                                isWin: false,
-                                reset: reset,
-                              );
-                            });
-                      } else {
-                        checkTilesAround(index);
-                      }
-                    });
-
+                    selectedIndexes.add(index);
+                    if (bombIndexes.contains(index)) {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DemineurAlertDialog(
+                              isWin: false,
+                              reset: reset,
+                            );
+                          });
+                    } else {
+                      checkTilesAround(index);
+                    }
+                    setState(() {});
+                    print("selectedIndexes");
+                    print(selectedIndexes);
+                    print("selectedIndexes.length");
+                    print(selectedIndexes.length);
                     if (Demineur.hasWin(
                         selectedIndexes.length, bombIndexes.length)) {
                       showDialog(
@@ -166,6 +168,11 @@ class MinesweeperTile extends StatelessWidget {
       !bombIndexes.contains(index) && isSelected && hasBombsAround();
 
   Color colorCase() {
+    /* //TODO
+    if (bombIndexes.contains(index)) {
+      return Colors.red;
+    }
+    //TODO */
     if (isSelected) {
       if (bombIndexes.contains(index)) {
         return Colors.red;
@@ -196,11 +203,6 @@ class Demineur {
     return nbTotalTiles - (nbSelectedIndexes + nbBombs) == 0;
   }
 
-/*   static Set<int> indexesNoBombsAround({int index, Set<int> bombIndexes, Set<int> selectedIndexes}) {
-    final indexesAround = Demineur.getIndexesAround(index);
-    selectedIndexes.addAll(indexesAround);
-  } */
-
   static int numberBombsAround(int index, Set<int> bombIndexes) {
     return getIndexesAround(index)
         .where((index) => bombIndexes.contains(index))
@@ -209,7 +211,7 @@ class Demineur {
   }
 
   static List<int> getIndexesAround(int index) {
-    final i = index / 9;
+    final i = index ~/ 9;
     final j = index % 9;
     List<int> indexTilesAround = [];
 
