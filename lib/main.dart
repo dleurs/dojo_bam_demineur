@@ -31,10 +31,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Set<int> selectedIndexes = {};
   Set<int> bombIndexes = {};
+  Set<int> flagIndexes = {};
 
   void reset() {
     selectedIndexes = {};
     bombIndexes = {};
+    flagIndexes = {};
     Random random = Random();
     while (bombIndexes.length < 10) {
       int randomNumber = random.nextInt(9 * 9);
@@ -79,6 +81,14 @@ class _MyHomePageState extends State<MyHomePage> {
               itemCount: 9 * 9,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
+                  onLongPress: () {
+                    if (!flagIndexes.contains(index)) {
+                      flagIndexes.add(index);
+                    } else {
+                      flagIndexes.remove(index);
+                    }
+                    setState(() {});
+                  },
                   onTap: () {
                     selectedIndexes.add(index);
                     if (bombIndexes.contains(index)) {
@@ -94,10 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       checkTilesAround(index);
                     }
                     setState(() {});
-                    print("selectedIndexes");
-                    print(selectedIndexes);
-                    print("selectedIndexes.length");
-                    print(selectedIndexes.length);
                     if (Demineur.hasWin(
                         selectedIndexes.length, bombIndexes.length)) {
                       showDialog(
@@ -114,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     bombIndexes: bombIndexes,
                     index: index,
                     isSelected: selectedIndexes.contains(index),
+                    flagIndexes: flagIndexes,
                   ),
                 );
               },
@@ -154,11 +161,13 @@ class MinesweeperTile extends StatelessWidget {
     required this.isSelected,
     required this.index,
     required this.bombIndexes,
+    required this.flagIndexes,
   }) : super(key: key);
 
   final bool isSelected;
   final int index;
   final Set<int> bombIndexes;
+  final Set<int> flagIndexes;
 
   bool hasBombsAround() {
     return Demineur.numberBombsAround(index, bombIndexes) > 0;
@@ -168,17 +177,15 @@ class MinesweeperTile extends StatelessWidget {
       !bombIndexes.contains(index) && isSelected && hasBombsAround();
 
   Color colorCase() {
-    /* //TODO
-    if (bombIndexes.contains(index)) {
-      return Colors.red;
-    }
-    //TODO */
     if (isSelected) {
       if (bombIndexes.contains(index)) {
         return Colors.red;
       } else {
         return Color.fromARGB(255, 109, 98, 98);
       }
+    }
+    if (flagIndexes.contains(index)) {
+      return Color.fromARGB(255, 24, 132, 178);
     }
     return Colors.grey;
   }
