@@ -1,3 +1,3 @@
 # Demineur BAM 29/11/22
 
-![Demo](assets/demo.png)
+![Demo](assets/demo.gif)
